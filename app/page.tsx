@@ -1,130 +1,122 @@
 "use client";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LoaderPinwheel, Grid3x3, Fan, FileDigit } from "lucide-react";
 
-import React, { useEffect, useState } from "react";
+import { MatchSec } from "@/components/home/matchsec";
 
-// Define types for API response
-interface Outcome {
-  name: string;
-  price: number;
-}
-
-interface Market {
-  key: string;
-  last_update: string;
-  outcomes: Outcome[];
-}
-
-interface Bookmaker {
-  key: string;
-  title: string;
-  last_update: string;
-  markets: Market[];
-}
-
-interface Match {
-  id: string;
-  sport_key: string;
-  sport_title: string;
-  commence_time: string;
-  home_team: string;
-  away_team: string;
-  bookmakers: Bookmaker[];
-}
-
-export default function Home() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchOdds = async () => {
-      try {
-        const response = await fetch(
-          "https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=30e2b52ef54ee54aab41faa72c03cd79&regions=uk&markets=h2h&oddsFormat=decimal&dateFormat=iso"
-        );
-        const data: Match[] = await response.json();
-        setMatches(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchOdds();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="h-screen bg-black text-white flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
+function Heropage() {
+  const pathname = usePathname();
 
   return (
-    <div className="bg-black min-h-screen text-white p-5">
-      <h1 className="text-3xl font-bold mb-8 booka">Soccer Betting Odds</h1>
-      <div className="grid grid-cols-1 gap-6">
-        {matches.map((match) => (
-          <div
-            key={match.id}
-            className="bg-gray-800 p-5 rounded-lg shadow-md border border-gray-600"
-          >
-            {/* Match Information */}
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-lg font-bold">
-                  {match.home_team} vs {match.away_team}
-                </h2>
-                <p className="text-gray-400 text-sm">
-                  {new Date(match.commence_time).toLocaleString()} -{" "}
-                  {match.sport_title}
-                </p>
-              </div>
-              <div className="text-booka text-xs font-medium">
-                Live <span className="animate-pulse">●</span>
-              </div>
-            </div>
+    <div className="bg-black min-h-screen">
+      {/* Horizontal Slider */}
+      <div className="w-full overflow-x-auto  text-white py-2">
+        <div className="flex space-x-4 px-4">
+          {[
+            { name: "Home", path: "/" },
+            { name: "Live", path: "/live" },
+            { name: "Sports", path: "/sports" },
+            { name: "Virtual", path: "/virtual" },
+            { name: "My Matches", path: "/my-matches" },
+            { name: "Jackpot", path: "/jackpot" },
+          ].map((item, index) => (
+            <Link key={index} href={item.path} passHref>
+              <h2
+                className={cn(
+                  "whitespace-nowrap px-4 py-2 rounded hover:text-yellow-400 transition",
+                  pathname === item.path
+                    ? "text-yellow-400 font-bold"
+                    : "text-white"
+                )}
+              >
+                {item.name}
+              </h2>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-            {/* Betting Odds */}
-            <div className="space-y-4">
-              {match.bookmakers.map((bookmaker) => (
-                <div key={bookmaker.key} className="bg-gray-700 p-4 rounded-md">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-sm font-bold">{bookmaker.title}</h3>
-                    <span className="text-gray-400 text-xs">
-                      Updated:{" "}
-                      {new Date(bookmaker.last_update).toLocaleTimeString()}
-                    </span>
-                  </div>
+      {/* Hero Image */}
+      <div className="relative w-full h-40">
+        <Image src="/hero.png" layout="fill" objectFit="cover" alt="hero" />
+      </div>
 
-                  <div className="flex justify-between items-center space-x-2">
-                    {bookmaker.markets[0]?.outcomes.map((outcome) => (
-                      <button
-                        key={outcome.name}
-                        className="flex-1 text-center py-2 rounded-md bg-gray-900 border border-gray-700 hover:bg-gray-600"
-                      >
-                        <span className="block text-sm">{outcome.name}</span>
-                        <span
-                          className={`block text-lg font-bold ${
-                            outcome.price > 0
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {outcome.price > 0
-                            ? `+${outcome.price}`
-                            : outcome.price}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
+      {/* Icons Section */}
+      <div className="flex items-center justify-between px-4 mt-6">
+        {[
+          { icon: Fan, label: "Soccer" },
+          { icon: LoaderPinwheel, label: "Today" },
+          { icon: FileDigit, label: "Booking Codes" },
+          { icon: Grid3x3, label: "More" },
+        ].map(({ icon: Icon, label }, index) => (
+          <div key={index} className="relative group">
+            <div className="flex items-center justify-center w-20 h-20 border-l-2 border-r-2 border-b-2 border-booka rounded-lg bg-transparent">
+              <div className="text-center">
+                <Icon className="mx-auto text-booka" size={32} />
+                <p className="mt-2 text-white font-bold text-xs">{label}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Gradient Background Section */}
+      <div className="mt-8 px-4 py-6 text-white  flex items-center justify-between gap-x-3 bg-gradient-to-r from-gray-700/30 via-gray-500/50 to-gray-800/20 rounded-lg shadow-lg">
+        <p className="text-lg font-bold">Live</p>
+        <p className="mt-2  border-b-2 text-booka border-booka">Soccer </p>
+        <p className="mt-2 "> V-Soccer </p>
+        <p className="mt-2 "> ESports </p>
+      </div>
+      <div className="flex items-center justify-between w-full p-3 rounded-lg  shadow-md">
+        <p className="bg-booka text-black font-bold py-2 px-4 text-xs rounded-lg transition hover:bg-yellow-400 hover:text-black cursor-pointer">
+          1x2
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          Over/Under
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          GG/NG
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          Double Chance
+        </p>
+      </div>
+      {/* match component */}
+      <div>
+        <MatchSec />
+      </div>
+      <div className="mt-8 px-4 py-6 text-white  flex items-center justify-between gap-x-3 bg-gradient-to-r from-gray-700/30 via-gray-500/50 to-gray-800/20 rounded-lg shadow-lg">
+        <p className="text-lg font-bold">Sports</p>
+        <p className="mt-2  border-b-2 text-booka border-booka">Soccer </p>
+        <p className="mt-2 "> V-Soccer </p>
+        <p className="mt-2 "> ESports </p>
+      </div>
+      <div className="flex items-center justify-between px-4 py-6 ">
+        <p className="text-sm text-booka">Highlights</p>
+        <p className="text-white text-sm">Today</p>
+        <p className="text-white text-sm">Top League</p>
+        <p className="text-white text-sm">Countries</p>
+      </div>
+      <div className="flex items-center justify-between w-full p-3 rounded-lg  shadow-md">
+        <p className="bg-booka text-black font-bold py-2 px-4 text-xs rounded-lg transition hover:bg-yellow-400 hover:text-black cursor-pointer">
+          1x2
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          Over/Under
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          GG/NG
+        </p>
+        <p className="bg-[#303030] text-gray-400 py-2 px-4 text-xs rounded-lg transition hover:bg-gray-700 hover:text-white cursor-pointer">
+          Double Chance
+        </p>
+      </div>
+      <MatchSec />
     </div>
   );
 }
+
+export default Heropage;

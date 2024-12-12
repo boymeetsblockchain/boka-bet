@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { User, DollarSign, LucideCassetteTape, Film } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const Navbar = () => {
   const router = useRouter();
@@ -15,18 +16,24 @@ export const Navbar = () => {
       {/* Icons */}
       <div className="flex items-center gap-x-6">
         {/* Bets Icon */}
-        <button className="flex items-center flex-col  gap-y-4 ">
+        {/* <button className="flex items-center flex-col  gap-y-4 ">
           <Film size={24} color="#f8a950" />
           <span className="hidden sm:inline text-booka">My Bets</span>
-        </button>
+        </button> */}
         {/* User Icon */}
-        <button
+        {/* <button
           className="flex items-center flex-col  gap-y-4 "
           onClick={() => router.push("/dashboard")}
         >
           <User size={24} fill="#f8a950" color="#f8a950" />
           <span className="hidden sm:inline text-booka">N 0</span>
-        </button>
+        </button> */}
+        <Link href={"/register"} className="text-booka">
+          Sign up
+        </Link>
+        <Link href={"/login"} className="text-booka">
+          Login
+        </Link>
       </div>
     </nav>
   );
